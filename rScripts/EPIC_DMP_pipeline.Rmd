@@ -1,0 +1,20 @@
+---
+title: "DMP_pipeline"
+author: "Qianhui"
+date: "21/01/2020"
+output: html_document
+---
+
+A pipeline for DMP analyses
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(fig.align = "center", fig.width = 7, error = TRUE, echo = TRUE) 
+
+```
+
+```{r libraries, message=FALSE, warning=FALSE}
+
+library(here); library(tidyverse); library(magrittr); library(minfi);
+
+```

@@ -1,4 +1,2 @@
-# Methods_DNAm
-Methods for analysing DNA methylation data.
+# Methods for DNA methylation data analyses
 
-EPIC array
