@@ -48,14 +48,14 @@ bump_dmrs <- minfi::bumphunter(GRset, design=design,
                                coef=2,
                                # cutoff=0.2,
                                pickCutoff=TRUE,
-                               pickCutoffQ = 0.95, # this is for permutation
+                               pickCutoffQ = 0.99, # this is for permutation
                                nullMethod="bootstrap",
-                               smooth=TRUE,
+                               # smooth=TRUE,
                                B=5,
-                               maxGap=250,
+                               maxGap=500,
                                smoothFunction=loessByCluster,
-                               minNum=2,
-                               useWeights=TRUE)
+                               minNum=7,
+                               useWeights=FALSE)
 
 return(bump_dmrs)
 }
@@ -75,8 +75,8 @@ probeLasso_dmrs <- champ.DMR(beta = B,
           method = "ProbeLasso",
           minDmrSize = 50,
           minDmrSep =1000,
-          minProbes = 2,
-          meanLassoRadius=1000)
+          minProbes = 7,
+          meanLassoRadius=375)
 
 return(probeLasso_dmrs)
 }
@@ -111,8 +111,8 @@ cpgAnnotation <- cpg.annotate(object = GRset,
 
 ## run dmrcate with multi-core(cores=5)
 DMRcate_dmrs <- dmrcate(object = cpgAnnotation,
-                              lambda = 500,
-                              C = 5,
+                              lambda = 1000,
+                              C = 2,
                               min.cpgs = 2)
 
 return(DMRcate_dmrs)
@@ -129,9 +129,9 @@ object_size(bumphunter)
 object_size(ProbeLasso)
 object_size(DMRcate)
 
-# save(bumphunter, ProbeLasso, DMRcate, 
-#      file = here("Method_DNAme/rds/DMRmethods_optiPara_GEO.RData"))
-# 
+save(bumphunter, ProbeLasso, DMRcate, 
+     file = here("Method_DNAme/rds/DMRmethods_DefaultPara_GEO.RData"))
+
 # mbm <- microbenchmark(
 #    bumphunter =  bumphunter_DMR(B = B, design = design),
 #    ProbeLasso =  ProbeLasso_DMR(B = B, phenoData = phenoData),
@@ -143,32 +143,33 @@ object_size(DMRcate)
 # theme_set(theme_pubr())
 # mbm_plot <- autoplot(mbm)
 
-# mbm_plot_GEOopti <- readRDS(file=here("Method_DNAme/rds_figure/mbm_GEO_DMRoptiPara_plot.rds"))
+
+# saveRDS(mbm_plot, file=here("Method_DNAme/rds_figure/mbm_GEO_DMR_defaultPara_plot.rds"))
 
 ########### true DMRs #######################################
 # bumphunter, ProbeLasso, DMRcate, 
-load(file = here("Method_DNAme/rds/DMRmethods_optiPara_GEO.RData"))
+load(file = here("Method_DNAme/rds/DMRmethods_DefaultPara_GEO.RData"))
 
 ## bumphunter
-bumphunterOpti <- bumphunter$table[bumphunter$table$fwer<0.05,] %>% 
+bumphunterDefault <- bumphunter$table[bumphunter$table$fwer<0.05,] %>% 
   dplyr::select(seqnames=chr, start, end, TotalProbeNum=L, deltaB=value) %>% 
   magrittr::inset("index", value=paste0("DMR", 1:nrow(.))) %>% 
   as_granges() 
-table(abs(bumphunterOpti$deltaB) >0.2)
+table(abs(bumphunterDefault$deltaB) >0.2)
 
 ## ProbeLasso
-ProbeLassoOpti <- ProbeLasso$ProbeLassoDMR %>% tibble::rownames_to_column(var = "index") %>% 
+ProbeLassoDefault <- ProbeLasso$ProbeLassoDMR %>% tibble::rownames_to_column(var = "index") %>% 
   as_granges() %>% 
   plyranges::filter(dmrP<0.05)
-
-table(abs(ProbeLassoOpti$betaAv_control-ProbeLassoOpti$betaAv_NNMToverEx) >0.2)
+  
+table(abs(ProbeLassoDefault$betaAv_control-ProbeLassoDefault$betaAv_NNMToverEx) >0.2)
 
 ## DMRcate
-DMRcateOpti <- extractRanges(DMRcate, genome = "hg19") %>% 
+DMRcateDefault <- extractRanges(DMRcate, genome = "hg19") %>% 
   plyranges::filter(Stouffer<0.05)
-DMRcateOpti$index <- paste0("DMR", 1:length(DMRcateOpti))
+DMRcateDefault$index <- paste0("DMR", 1:length(DMRcateDefault))
 
-table(abs(DMRcateOpti$meandiff) >0.2)
+table(abs(DMRcateDefault$meandiff) >0.2)
 
 
 
@@ -181,24 +182,23 @@ Enhancer_humanAll <- read.csv(here("PrepareData/DownloadedFilesForEPICpipeline",
                               col.names = c("seqnames", "start", "end","coord", "V5", "V6")) %>% as_granges()
 
 ## bumphunter
-bumphunterOpti <- bumphunterOpti %>% plyranges::filter(abs(deltaB)>0.2)
-find_overlaps_within(Promoter_humanAll, bumphunterOpti)$index %>% unique() %>% length()
-find_overlaps_within(Enhancer_humanAll, bumphunterOpti)$index %>% unique() %>% length()
+bumphunterDefault <- bumphunterDefault %>% plyranges::filter(abs(deltaB)>0.2)
+find_overlaps_within(Promoter_humanAll, bumphunterDefault)$index %>% unique() %>% length()
+find_overlaps_within(Enhancer_humanAll, bumphunterDefault)$index %>% unique() %>% length()
 
 ## ProbeLasso
-ProbeLassoOpti <- ProbeLassoOpti %>% 
-  plyranges::filter(abs(ProbeLassoOpti$betaAv_control-ProbeLassoOpti$betaAv_NNMToverEx) >0.2)
-find_overlaps_within(Promoter_humanAll, ProbeLassoOpti)$index %>% unique() %>% length()
-find_overlaps_within(Enhancer_humanAll, ProbeLassoOpti)$index %>% unique() %>% length()
+ProbeLassoDefault <- ProbeLassoDefault %>% 
+  plyranges::filter(abs(ProbeLassoDefault$betaAv_control-ProbeLassoDefault$betaAv_NNMToverEx) >0.2)
+find_overlaps_within(Promoter_humanAll, ProbeLassoDefault)$index %>% unique() %>% length()
+find_overlaps_within(Enhancer_humanAll, ProbeLassoDefault)$index %>% unique() %>% length()
 
 # DMRcate
-DMRcateOpti <- DMRcateOpti %>% plyranges::filter(abs(meandiff) >0.2)
-find_overlaps_within(Promoter_humanAll, DMRcateOpti)$index %>% unique() %>% length()
-find_overlaps_within(Enhancer_humanAll, DMRcateOpti)$index %>% unique() %>% length()
+DMRcateDefault <- DMRcateDefault %>% plyranges::filter(abs(meandiff) >0.2)
+find_overlaps_within(Promoter_humanAll, DMRcateDefault)$index %>% unique() %>% length()
+find_overlaps_within(Enhancer_humanAll, DMRcateDefault)$index %>% unique() %>% length()
 
 
-save(bumphunterOpti, ProbeLassoOpti, DMRcateOpti, 
-     file = here("Method_DNAme/rds/DMRmethods_OptiPara_GEO_Grange.RData"))
-
+save(bumphunterDefault, ProbeLassoDefault, DMRcateDefault, 
+     file = here("Method_DNAme/rds/DMRmethods_DefaultPara_GEO_Grange.RData"))
 
 
