@@ -13,7 +13,7 @@ baseDir <- file.path(here("EPICdata/IDAT_Placenta_PAC_sub12"))
 
 phenoData <- read.metharray.sheet(baseDir)
 
-EpicRGsetPAC12 <- read.metharray.exp(targets = phenoData, extended = TRUE, force=TRUE)
+EpicRGsetPAC12 <- read.metharray.exp(targets = phenoData, extended = TRUE, force = TRUE)
 # phenoDataPAC12 <- pData(EpicRGsetPAC12) # chain data & phenotypes together
 
 # preprocess ######################################################################
@@ -167,9 +167,9 @@ champ.SVD(beta = combatAdjusted_Beta, pd = pd,
 
 savelist <- list(betaNorm=betaNorm,
                  Mnorm=Mnorm,
-                 Adjusted_Beta=combatAdjusted_Beta,
-                 Adjusted_Mnorm=combatAdjusted_Mnorm,
-                 EpicRGsetPAC12=EpicRGsetPAC12)
+                 # Adjusted_Beta=combatAdjusted_Beta,
+                 # Adjusted_Mnorm=combatAdjusted_Mnorm,
+                 phenoDataPAC12=phenoDataPAC12)
 
 saveRDS(savelist, file = here("Method_DNAme/rds/preprocessed_PAC12_placenta.rds"))
 
