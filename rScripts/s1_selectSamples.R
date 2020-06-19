@@ -35,7 +35,7 @@ phenoData_fil %>%
 phenoData_fil %>% 
   mutate(Batch=str_replace_all(ArrayDateReceived, 
                c("2017-03-23T00:00:00Z"="1", "2019-02-01T00:00:00Z"="2"))) %>% 
-  select(Tissue, Batch,Trimester, `Fetal sex`=Fetal.Sex) %>% 
+  select(Tissue, Batch,Trimester, `Fetal sex`=Fetal.Sex, Gestation = Gestational.Age) %>% 
   write_csv(path = here("Method_DNAme/files/Table3_methodPaper.csv"))
   
 

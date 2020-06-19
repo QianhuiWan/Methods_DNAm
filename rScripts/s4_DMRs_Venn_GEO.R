@@ -19,7 +19,7 @@ load(file = here("Method_DNAme/rds/DMRmethods_OptiPara_GEO_Grange.RData"))
 # bumphunterComp, ProbeLassoComp, DMRcateComp
 load(file = here("Method_DNAme/rds/DMRmethods_ComparablePara_GEO_Grange.RData"))
 
-##############################################################################
+##########################################################################################
 # default para
 ## bumphunter, 99
 ## Probe Lasso, 2
@@ -41,18 +41,18 @@ Venn_def <- draw.triple.venn(area1 = 99,
                              n123 = 0,
                              category = c("Bumphunter", "Probe Lasso", "DMRcate"),
                              fill = c("pink", "lightblue", "lightgoldenrodyellow"),
-                             cex = 1.2, cat.cex = 0.6, 
+                             cex = 1.2, cat.cex = 0.9, 
                              cat.fontface = 2,
                              cat.just =list(c(0, -1.5), c(0.5, -3.5), c(1.5, -1.5)),
                              # lty = "blank"
                              cat.dist = c(0.05, 0.05, 0.05)
 ) 
 
-Venn_def <- grid.arrange(gTree(children=Venn_def), 
+Venn_def <- grid.arrange(gTree(children=Venn_def), vp=viewport(width = 0.9, height = 0.9),
                          top=textGrob("Default parameters",
-                                      gp=gpar(fontface="bold",cex=0.8))) %>% 
+                                      gp=gpar(fontface="bold",cex=0.8),
+                                      x = 0.5, vjust = -0.8)) %>% 
   as_ggplot()
-
 
 ##############################################################################
 # optimised para
@@ -76,18 +76,18 @@ Venn_opti <- draw.triple.venn(area1 = 2,
                              n123 = 1,
                              category = c("Bumphunter", "Probe Lasso", "DMRcate"),
                              fill = c("pink", "lightblue", "lightgoldenrodyellow"),
-                             cex = 1.2, cat.cex = 0.6, 
+                             cex = 1.2, cat.cex = 0.9, 
                              cat.fontface = 2,
-                             cat.just =list(c(0, -0.5), c(1, -0.5), c(0.5, -1.5)),
+                             cat.just =list(c(0, -0.5), c(1, -0.5), c(0.5, -1)),
                              # lty = "blank"
                              cat.dist = c(0.05, 0.05, 0.05)
 ) 
 
-Venn_opti <- grid.arrange(gTree(children=Venn_opti), 
+Venn_opti <- grid.arrange(gTree(children=Venn_opti), vp=viewport(width = 0.9, height = 0.9),
                          top=textGrob("Optimised parameters",
-                                      gp=gpar(fontface="bold",cex=0.8))) %>% 
+                                      gp = gpar(fontface="bold",cex=0.8),
+                                      x = 0.5, vjust = -0.8)) %>% 
   as_ggplot()
-
 
 # Comparable para ##################################################################
 ## bumphunter, 3
@@ -109,15 +109,16 @@ Venn_comp <- draw.triple.venn(area1 = 3,
                               n123 = 1,
                               category = c("Bumphunter", "Probe Lasso", "DMRcate"),
                               fill = c("pink", "lightblue", "lightgoldenrodyellow"),
-                              cex = 1.2, cat.cex = 0.6, 
+                              cex = 1.2, cat.cex = 0.9, 
                               cat.fontface = 2,
-                              cat.just =list(c(0, -0.5), c(1, -0.5), c(0.5, -1.5)),
+                              cat.just =list(c(0, -0.5), c(1, -0.5), c(0.5, -1)),
                               # lty = "blank"
                               cat.dist = c(0.05, 0.05, 0.05)) 
 
-Venn_comp <- grid.arrange(gTree(children=Venn_comp), 
-                          top=textGrob("Comparable parameters",
-                                        gp=gpar(fontface="bold",cex=0.8))) %>% 
+Venn_comp <- grid.arrange(gTree(children=Venn_comp), vp=viewport(width = 0.9, height = 0.9),
+                          top=grid::textGrob("Comparable parameters",
+                                        gp=gpar(fontface="bold",cex=0.8),
+                                        x = 0.5, vjust = -0.8)) %>% 
   as_ggplot()
 
 # jpeg(file = here("Method_DNAme/figures/test.jpeg"),
@@ -125,16 +126,13 @@ Venn_comp <- grid.arrange(gTree(children=Venn_comp),
 # Venn_comp
 # dev.off()
 
-
-
 VennPlots_fig <- ggarrange(Venn_def, Venn_opti, Venn_comp,
          labels = c("A", "B", "C", NULL),
          font.label = list(size = 12, face = "plain", color ="black"), 
          nrow=2, ncol = 2)
 
-jpeg(file = here("Method_DNAme/figures/VennPlots_DMRs_v1.jpeg"),
+jpeg(file = here("Method_DNAme/figures/VennPlots_DMRs_v2.jpeg"),
      width = 16, height = 16, units = "cm", res = 320)
 VennPlots_fig
 dev.off()
-
 
