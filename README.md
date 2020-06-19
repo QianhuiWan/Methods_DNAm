@@ -1,4 +1,4 @@
-# Methods for DNA methylation data analyses
+# Comparison of methods for DNA methylation data analyses
 
 ## EPIC array data
 
