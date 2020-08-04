@@ -7,3 +7,4 @@
 * Then the placenta data set from our lab were used to comfirm the differeces of results obtained from different methods.
 
 * After comparing bumphunter, Probe Lasso and DMRcate, DMRcate is recommended for detecting DMRs using placenta samples.
+
